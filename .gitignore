@@ -118,3 +118,6 @@ prime/
 
 # Manpage
 /man
+
+# Docker stuff
+*volumes

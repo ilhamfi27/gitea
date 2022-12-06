@@ -41,6 +41,16 @@ RUN apk --no-cache add \
     su-exec \
     gnupg
 
+# Install JuiceFS client
+RUN apk add --no-cache curl && \
+  JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
+  wget "https://github.com/juicedata/juicefs/releases/download/v${JFS_LATEST_TAG}/juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
+  tar -zxf "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
+  install juicefs /usr/bin && \
+  rm juicefs "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
+  rm -rf /var/cache/apk/* && \
+  apk del curl
+
 RUN addgroup \
     -S -g 1000 \
     git && \

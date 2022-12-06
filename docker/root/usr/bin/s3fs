@@ -1,0 +1,34 @@
+#!/bin/sh
+set -eu
+
+# GIT_USER_ID=$(id -u git)
+# GIT_GROUP_ID=$(id -g git)
+
+mkdir -p $S3_MOUNT_POINT
+chmod 777 $S3_MOUNT_POINT
+# chmod 2770 $S3_MOUNT_POINT
+# chown $GIT_USER_ID:$GIT_GROUP_ID $S3_MOUNT_POINT
+
+juicefs format \
+    --storage s3 \
+    --bucket $S3_HOST/$S3_BUCKET \
+    --access-key $S3_ACCESS_KEY_ID \
+    --secret-key $S3_SECRET_ACCESS_KEY \
+    $JUICEFS_METADATA_STORAGE juicefs-gitea
+
+juicefs mount -d \
+    --cache-size 4096 \
+    --cache-dir /tmp/jfsCache \
+    $JUICEFS_METADATA_STORAGE $S3_MOUNT_POINT
+
+echo "juicefs format \
+    --storage s3 \
+    --bucket $S3_HOST/$S3_BUCKET \
+    --access-key $S3_ACCESS_KEY_ID \
+    --secret-key $S3_SECRET_ACCESS_KEY \
+    $JUICEFS_METADATA_STORAGE juicefs-gitea"
+
+echo "juicefs mount -d \
+    --cache-size 4096 \
+    --cache-dir /tmp/jfsCache \
+    $JUICEFS_METADATA_STORAGE $S3_MOUNT_POINT"

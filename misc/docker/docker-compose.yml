@@ -1,0 +1,52 @@
+version: '3.9'
+services:
+  app:
+    restart: always
+    image: ilhamfadhilah/gitea:${GITEA_VERSION}
+    depends_on:
+      - postgresql
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    ports:
+      - "${GITEA_SSH_PORT}:22"
+      - "${GITEA_WEB_PORT}:3000"
+    environment:
+      VIRTUAL_PORT: 3000
+      VIRTUAL_HOST: ${GITEA_HOSTNAME}
+      GITEA__database__DB_TYPE: postgresql
+      GITEA__database__HOST: postgresql:5432
+      GITEA__database__NAME: gitea
+      GITEA__database__USER: gitea
+      GITEA__database__PASSWD: gitea123456
+      S3_HOST: https://is3.cloudhost.id
+      S3_BUCKET: dev-gitlab
+      S3_ACCESS_KEY_ID: M2Q48SOU7S5J31XN96H2
+      S3_SECRET_ACCESS_KEY: 5kw3DE9nDoCiQnLCPWpPT3mWwFVekDLl9xliS3bv
+      S3_MOUNT_POINT: /data
+      JUICEFS_METADATA_STORAGE: postgres://gitea:gitea123456@postgresql:5432/gitea_juicefs?sslmode=disable
+    networks:
+      default:
+  postgresql:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    volumes:
+      - './volumes/gitea_pgsql/data:/var/lib/postgresql/data'
+      - './config/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql'
+    restart: unless-stopped
+    networks:
+      default:
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - '8910:8080'
+    depends_on:
+      - postgresql
+    networks:
+      default:
+
+networks:
+  default:

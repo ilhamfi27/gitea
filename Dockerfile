@@ -1,4 +1,4 @@
-#Build stage
+# Build stage
 FROM golang:1.18-alpine3.16 AS build-env
 
 ARG GOPROXY
@@ -9,14 +9,14 @@ ARG TAGS="sqlite sqlite_unlock_notify"
 ENV TAGS "bindata timetzdata $TAGS"
 ARG CGO_EXTRA_CFLAGS
 
-#Build deps
+# Build deps
 RUN apk --no-cache add build-base git nodejs npm
 
-#Setup repo
+# Setup repo
 COPY . ${GOPATH}/src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
-#Checkout version if set
+# Checkout version if set
 RUN if [ -n "${GITEA_VERSION}" ]; then git checkout "${GITEA_VERSION}"; fi \
  && make clean-all build
 
@@ -39,17 +39,14 @@ RUN apk --no-cache add \
     s6 \
     sqlite \
     su-exec \
-    gnupg
-
-# Install JuiceFS client
-RUN apk add --no-cache curl && \
-  JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
-  wget "https://github.com/juicedata/juicefs/releases/download/v${JFS_LATEST_TAG}/juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
-  tar -zxf "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
-  install juicefs /usr/bin && \
-  rm juicefs "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
-  rm -rf /var/cache/apk/* && \
-  apk del curl
+    gnupg \
+    fuse \
+    build-base \
+    automake \
+    autoconf \
+    fuse-dev \
+    libxml2-dev \
+    curl-dev
 
 RUN addgroup \
     -S -g 1000 \
@@ -72,6 +69,9 @@ ENTRYPOINT ["/usr/bin/entrypoint"]
 CMD ["/bin/s6-svscan", "/etc/s6"]
 
 COPY docker/root /
+RUN chmod +x /usr/bin/s3fs-install.sh && . /usr/bin/s3fs-install.sh
+RUN chmod +x /usr/bin/s3fs.sh
+
 COPY --from=build-env /go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
 COPY --from=build-env /go/src/code.gitea.io/gitea/environment-to-ini /usr/local/bin/environment-to-ini
 RUN chmod 755 /usr/bin/entrypoint /app/gitea/gitea /usr/local/bin/gitea /usr/local/bin/environment-to-ini

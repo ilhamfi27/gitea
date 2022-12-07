@@ -28,6 +28,7 @@ if [ ! -f ${GITEA_APP_INI} ]; then
     # Substitute the environment variables in the template
     APP_NAME=${APP_NAME:-"Gitea: Git with a cup of tea"} \
     RUN_MODE=${RUN_MODE:-"prod"} \
+    GITEA_BASE_GIT_DIR=${GITEA_BASE_GIT_DIR:-"/data/git"} \
     RUN_USER=${USER:-"git"} \
     SSH_DOMAIN=${SSH_DOMAIN:-"localhost"} \
     HTTP_PORT=${HTTP_PORT:-"3000"} \

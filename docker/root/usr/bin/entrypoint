@@ -30,11 +30,17 @@ if [ -n "${USER_UID}" ] && [ "${USER_UID}" != "`id -u ${USER}`" ]; then
     sed -i -e "s/^${USER}:\([^:]*\):[0-9]*:\([0-9]*\)/${USER}:\1:${USER_UID}:\2/" /etc/passwd
 fi
 
-# . /usr/bin/s3fs
-
-for FOLDER in /data/gitea/conf /data/gitea/log /data/git /data/ssh; do
+for FOLDER in /data/gitea/conf /data/gitea/log /data/git /data/ssh $S3_MOUNT_POINT; do
     mkdir -p ${FOLDER}
 done
+
+if [ -d "$S3_MOUNT_POINT" ]; then
+    GIT_USER_ID=$(id -u git)
+    GIT_GROUP_ID=$(id -g git)
+    chmod 755 $S3_MOUNT_POINT
+    chown $GIT_USER_ID:$GIT_GROUP_ID $S3_MOUNT_POINT
+    . /usr/bin/s3fs.sh
+fi
 
 if [ $# -gt 0 ]; then
     exec "$@"

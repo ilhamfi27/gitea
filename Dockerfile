@@ -69,8 +69,8 @@ ENTRYPOINT ["/usr/bin/entrypoint"]
 CMD ["/bin/s6-svscan", "/etc/s6"]
 
 COPY docker/root /
-RUN chmod +x /usr/bin/s3fs-install.sh && . /usr/bin/s3fs-install.sh
-RUN chmod +x /usr/bin/s3fs.sh
+RUN chmod +x /usr/bin/juicefs-install.sh && . /usr/bin/juicefs-install.sh
+RUN chmod +x /usr/bin/juicefs.sh
 
 COPY --from=build-env /go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
 COPY --from=build-env /go/src/code.gitea.io/gitea/environment-to-ini /usr/local/bin/environment-to-ini

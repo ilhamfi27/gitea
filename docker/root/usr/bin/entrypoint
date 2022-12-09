@@ -39,7 +39,7 @@ if [ -d "$S3_MOUNT_POINT" ]; then
     GIT_GROUP_ID=$(id -g git)
     chmod 755 $S3_MOUNT_POINT
     chown $GIT_USER_ID:$GIT_GROUP_ID $S3_MOUNT_POINT
-    . /usr/bin/s3fs.sh
+    . /usr/bin/juicefs.sh
 fi
 
 if [ $# -gt 0 ]; then

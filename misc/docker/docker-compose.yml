@@ -14,7 +14,7 @@ services:
     environment:
       VIRTUAL_PORT: 3000
       VIRTUAL_HOST: ${GITEA_HOSTNAME}
-      GITEA__database__DB_TYPE: postgresql
+      GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: postgresql:5432
       GITEA__database__NAME: gitea
       GITEA__database__USER: gitea
@@ -27,6 +27,7 @@ services:
       S3_ACCESS_KEY_ID: M2Q48SOU7S5J31XN96H2
       S3_SECRET_ACCESS_KEY: 5kw3DE9nDoCiQnLCPWpPT3mWwFVekDLl9xliS3bv
       S3_MOUNT_POINT: /mnt/gitea/git
+      JUICEFS_METADATA_STORAGE: postgres://gitea:gitea123456@postgresql:5432/gitea_juicefs?sslmode=disable
     volumes:
       - './config/gitea:/data/gitea/conf:rw'
     cap_add:

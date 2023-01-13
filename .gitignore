@@ -121,3 +121,5 @@ prime/
 
 # Docker stuff
 *volumes
+
+.certs
